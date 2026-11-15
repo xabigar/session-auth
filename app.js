@@ -12,10 +12,14 @@ const users = [];
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 app.use(session({
-    secret: 'your-secret-key',
+    secret: 'your-secret-key', // lo mejor ponerlo en un .env
     resave: false,
     // Solo se crea la sesión (y su cookie) cuando hay algo que guardar, es decir, tras el login
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60    // 1 hora
+    }
 }));
 
 // Página de login
@@ -97,7 +101,7 @@ app.get('/dashboard', (req, res) => {
 });
 
 // Cierre de sesión
-app.get('/logout', (req, res) => {
+app.post('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
