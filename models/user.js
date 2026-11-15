@@ -9,12 +9,12 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function(next) {
     try {
         if (this.isModified('password')) {
-            console.log('Hashing password for user:', this.username);
+            console.log('Cifrando la contraseña del usuario:', this.username);
             this.password = await bcrypt.hash(this.password, 10);
         }
         next();
     } catch (error) {
-        console.error('Error in password hashing:', error);
+        console.error('Error al cifrar la contraseña:', error);
         next(error);
     }
 });
