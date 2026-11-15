@@ -5,43 +5,43 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// In-memory user storage (replace with a database in production)
+// Usuarios guardados en memoria (en producción, usa una base de datos)
 const users = [];
 
-// Middleware
+// Middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
-    // Only create a session (and its cookie) once there is something to store, i.e. after login
+    // Solo se crea la sesión (y su cookie) cuando hay algo que guardar, es decir, tras el login
     saveUninitialized: false
 }));
 
-// Serve login page
+// Página de login
 app.get('/', (req, res) => {
     res.redirect('/login.html');
 });
 
-// Serve register page
+// Página de registro
 app.get('/register', (req, res) => {
     res.redirect('/register.html');
 });
 
-// Register endpoint
+// Registro de usuarios
 app.post('/register', async (req, res) => {
     try {
         const { username, password } = req.body;
         
-        // Check if user already exists
+        // Comprobar si el usuario ya existe
         if (users.find(user => user.username === username)) {
-            return res.status(400).send('Username already exists');
+            return res.status(400).send('El nombre de usuario ya existe');
         }
 
-        // Hash password
+        // Cifrar la contraseña
         const hashedPassword = await bcrypt.hash(password, 10);
         
-        // Store user
+        // Guardar el usuario
         users.push({
             username,
             password: hashedPassword
@@ -49,59 +49,59 @@ app.post('/register', async (req, res) => {
 
         res.redirect('/');
     } catch (error) {
-        res.status(500).send('Error registering user');
+        res.status(500).send('Error al registrar el usuario');
     }
 });
 
-// Login endpoint
+// Inicio de sesión
 app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
         
-        // Find user
+        // Buscar el usuario
         const user = users.find(user => user.username === username);
         
         if (!user) {
-            // Same message whether the user exists or not: do not reveal which usernames are registered
-            return res.status(401).send('Invalid username or password');
+            // Mismo mensaje exista o no el usuario: no se revela qué usuarios están registrados
+            return res.status(401).send('Usuario o contraseña incorrectos');
         }
 
-        // Check password
+        // Comprobar la contraseña
         const validPassword = await bcrypt.compare(password, user.password);
         
         if (!validPassword) {
-            return res.status(401).send('Invalid username or password');
+            return res.status(401).send('Usuario o contraseña incorrectos');
         }
 
-        // Set session
+        // Guardar la sesión
         req.session.user = username;
         res.redirect('/dashboard');
     } catch (error) {
-        res.status(500).send('Error logging in');
+        res.status(500).send('Error al iniciar sesión');
     }
 });
 
-// Escape HTML special characters before inserting user data into a page
+// Escapar los caracteres especiales de HTML antes de insertar datos del usuario en una página
 function escapeHtml(text) {
     return String(text).replace(/[&<>"']/g, (c) => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     })[c]);
 }
 
-// Dashboard route (protected)
+// Ruta del dashboard (protegida)
 app.get('/dashboard', (req, res) => {
     if (!req.session.user) {
         return res.redirect('/');
     }
-    res.send(`Welcome ${escapeHtml(req.session.user)}! You are now logged in.`);
+    res.send(`¡Bienvenido/a ${escapeHtml(req.session.user)}! Has iniciado sesión.`);
 });
 
-// Logout route
+// Cierre de sesión
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
 
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Servidor en marcha en http://localhost:${port}`);
 });

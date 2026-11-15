@@ -1,31 +1,31 @@
 # session-auth
 
-Sesioetan oinarritutako autentifikazioaren adibidea: Express, express-session eta bcryptjs.
+Ejemplo de autenticación basada en sesiones: Express, express-session y bcryptjs.
 
-Bi adar daude:
+Hay dos ramas:
 
-- `basic`: erabiltzaileak memorian gordetzen dira.
-- `main`: erabiltzaileak eta sesioak MongoDBn gordetzen dira.
+- `basic`: los usuarios se guardan en memoria.
+- `main`: los usuarios y las sesiones se guardan en MongoDB.
 
-Adar honetan: Erabiltzaileak memorian gordetzen dira (zerbitzaria berrabiaraztean galtzen dira).
+En esta rama: los usuarios se guardan en memoria (se pierden al reiniciar el servidor).
 
-## Behar dena
+## Requisitos
 
-- Node.js 18 edo berriagoa
+- Node.js 18 o superior
 
-## Abiarazi
+## Arrancar
 
 ```bash
 npm ci
 node app.js
 ```
 
-Ireki http://localhost:3000.
+Abre http://localhost:3000.
 
-## Segurtasun oharrak
+## Notas de seguridad
 
-- Pasahitzak bcryptjs-ekin hasheatuta gordetzen dira, inoiz ez testu lauan.
-- Login-ak mezu bera ematen du erabiltzailea ez badago eta pasahitza okerra bada, erregistratutako erabiltzaileak ez agerian uzteko.
-- `saveUninitialized: false`: sesioa (eta cookiea) saioa hasi ondoren bakarrik sortzen da.
-- Erabiltzaile-izena HTMLan sartu aurretik ihes egiten da (XSS saihesteko).
-- Sesioaren sekretua (`your-secret-key`) adibide bat da: benetako proiektu batean ingurune-aldagai batetik irakurri behar da.
+- Las contraseñas se guardan con hash mediante bcryptjs, nunca en texto plano.
+- El login da el mismo mensaje si el usuario no existe y si la contraseña es incorrecta, para no revelar qué usuarios están registrados.
+- `saveUninitialized: false`: la sesión (y la cookie) solo se crea después de iniciar sesión.
+- El nombre de usuario se escapa antes de insertarlo en el HTML (para evitar XSS).
+- El secreto de la sesión (`your-secret-key`) es un ejemplo: en un proyecto real debe leerse de una variable de entorno.
