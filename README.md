@@ -4,10 +4,10 @@ Ejemplo de autenticación basada en sesiones: Express, express-session y bcryptj
 
 Hay dos ramas:
 
-- `basic`: los usuarios se guardan en memoria.
-- `main`: los usuarios y las sesiones se guardan en MongoDB.
+- `main`: los usuarios se guardan en memoria.
+- `mongo`: los usuarios y las sesiones se guardan en MongoDB.
 
-En esta rama: los usuarios se guardan en memoria (se pierden al reiniciar el servidor).
+En esta rama (`main`): los usuarios se guardan en memoria (se pierden al reiniciar el servidor).
 
 ## Requisitos
 
@@ -28,4 +28,6 @@ Abre http://localhost:3000.
 - El login da el mismo mensaje si el usuario no existe y si la contraseña es incorrecta, para no revelar qué usuarios están registrados.
 - `saveUninitialized: false`: la sesión (y la cookie) solo se crea después de iniciar sesión.
 - El nombre de usuario se escapa antes de insertarlo en el HTML (para evitar XSS).
-- El secreto de la sesión (`your-secret-key`) es un ejemplo: en un proyecto real debe leerse de una variable de entorno.
+- La cookie de sesión es `httpOnly` (no accesible desde JavaScript) y caduca a la hora (`maxAge`).
+- El cierre de sesión es `POST /logout` (no GET), para que un enlace o imagen de otra página no pueda cerrar la sesión.
+- El secreto de la sesión (`your-secret-key`) es un ejemplo: en un proyecto real debe leerse de una variable de entorno (por ejemplo, un `.env`).
